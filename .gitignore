@@ -1,0 +1,43 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ
+.idea
+*.iml
+*.iws
+*.ipr
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+
+# Application secrets
+application.properties
+
+# Docker
+*.pid
+
+# Build
+build/
+
+# Node (para quando tiver Angular)
+node_modules/
+
+# Coverage
+coverage/
+
+# Temp
+tmp/
+temp/
