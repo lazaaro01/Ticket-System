@@ -16,46 +16,44 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class PaymentService {
 
-    private final EventRepository eventRepository;
-    private final OrderRepository orderRepository;
-    private final RestClient abacateClient;
-    @Value("${abacate.api-key}")
-    private String apiKey;
+        private final EventRepository eventRepository;
+        private final OrderRepository orderRepository;
+        private final RestClient abacateClient;
+        @Value("${abacate.api-key}")
+        private String apiKey;
 
-    public Order createPixPaymentRequest(CreatePixPaymentRequest request) {
-        Event event = eventRepository.findById(request.getEventId())
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
+        public Order createPixPaymentRequest(CreatePixPaymentRequest request) {
+                Event event = eventRepository.findById(request.getEventId())
+                                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
 
-        var response = abacateClient.post()
-                .uri("/pix/charges")
-                .header("Authorization", "Bearer" + apiKey)
-                .body(
-                        """
-                      {
-                        "amount": %s,
-                        "description": "Ingresso %s",
-                        "customer": {
-                          "name": "%s",
-                          "email": "%s"
-                        }
-                      }
-                      """.formatted(
-                                event.getPrice(),
-                                event.getName(),
-                                request.getCustomerName(),
-                                request.getCustomerEmail()
-                        )
-                )
-                .retrieve()
-                .body(String.class);
+                var response = abacateClient.post()
+                                .uri("/pix/charges")
+                                .header("Authorization", "Bearer " + apiKey)
+                                .body(
+                                                """
+                                                                {
+                                                                  "amount": %s,
+                                                                  "description": "Ingresso %s",
+                                                                  "customer": {
+                                                                    "name": "%s",
+                                                                    "email": "%s"
+                                                                  }
+                                                                }
+                                                                """.formatted(
+                                                                event.getPrice(),
+                                                                event.getName(),
+                                                                request.getCustomerName(),
+                                                                request.getCustomerEmail()))
+                                .retrieve()
+                                .body(String.class);
 
-        System.out.println("ABACATE RESPONSE: " + response);
+                System.out.println("ABACATE RESPONSE: " + response);
 
-        Order order = new Order();
-        order.setEventId(event.getId());
-        order.setStatus("PENDING");
-        order.setCreatedAt(LocalDateTime.now());
+                Order order = new Order();
+                order.setEventId(event.getId());
+                order.setStatus("PENDING");
+                order.setCreatedAt(LocalDateTime.now());
 
-        return orderRepository.save(order);
-    }
+                return orderRepository.save(order);
+        }
 }
